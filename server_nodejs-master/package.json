@@ -1,0 +1,32 @@
+{
+  "name": "bootpay-rest-client",
+  "version": "2.0.3",
+  "description": "Bootpay Rest Client Javasrcipt Library",
+  "main": "lib/bootpay.js",
+  "dependencies": {
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bootpay/server_nodejs"
+  },
+  "keywords": [
+    "결제",
+    "payment",
+    "결제연동",
+    "PG연동",
+    "PG",
+    "부트페이",
+    "bootpay"
+  ],
+  "author": "Bootpay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bootpay/server_nodejs/issues"
+  },
+  "homepage": "https://docs.bootpay.co.kr"
+}

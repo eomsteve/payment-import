@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const cors = require('cors');
 
+var BootpayRest = require('bootpay-rest-client');
+
 dotenv.config();
 
 const app = express();
@@ -19,114 +21,40 @@ app.get('/', (req, res) =>{
 })
 
 app.use(bodyParser.json());
-// "/payments/complete"에 대한 POST 요청을 처리
-app.post("/payments/complete", async (req, res) => {
-  console.log('data');
-  
-  try {
-    
-    const { imp_uid, merchant_uid } = req.body; // req의 body에서 imp_uid, merchant_uid 추출
-    const getToken = await axios({
-        url: "https://api.iamport.kr/users/getToken",
-        method: "post", // POST method
-        headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-        data: {
-          imp_key: "imp_apikey", // REST API키
-          imp_secret: "ekKoeW8RyKuT0zgaZsUtXXTLQ4AhPFW3ZGseDA6bkA5lamv9OqDMnxyeB9wqOsuO9W3Mx9YSJ4dTqJ3f" // REST API Secret
-        }
-      });
-      const { access_token } = getToken.data.response; // 인증 토큰
-      
-      // imp_uid로 아임포트 서버에서 결제 정보 조회
-      const getPaymentData = await axios({
-        url: `https://api.iamport.kr/payments/${imp_uid}`, // imp_uid 전달
-        method: "get", // GET method
-        headers: { "Authorization": access_token } // 인증 토큰 Authorization header에 추가
-      });
-      const paymentData = getPaymentData.data.response; // 조회한 결제 정보
-//진행 여기까지
-      // DB에서 결제되어야 하는 금액 조회
-      // const order = await Orders.findById(paymentData.merchant_uid);
-      // const amountToBePaid = order.amount; // 결제 되어야 하는 금액
-      // // 결제 검증하기
-      // const { amount, status } = paymentData;
-      // if (amount === amountToBePaid) { // 결제 금액 일치. 결제 된 금액 === 결제 되어야 하는 금액
-      //   await Orders.findByIdAndUpdate(merchant_uid, { $set: paymentData }); // DB에 결제 정보 저장
-        
-      //   switch (status) {
-      //     case "ready": // 가상계좌 발급
-      //       // DB에 가상계좌 발급 정보 저장
-      //       const { vbank_num, vbank_date, vbank_name } = paymentData;
-      //       await Users.findByIdAndUpdate("/* 고객 id */", { $set: { vbank_num, vbank_date, vbank_name }});
-      //       // 가상계좌 발급 안내 문자메시지 발송
-      //       SMS.send({ text: `가상계좌 발급이 성공되었습니다. 계좌 정보 ${vbank_num} ${vbank_date} ${vbank_name}`});
-      //       res.send({ status: "vbankIssued", message: "가상계좌 발급 성공" });
-      //       break;
-      //     case "paid": // 결제 완료
-      //       res.send({ status: "success", message: "일반 결제 성공" });
-      //       break;
-      //   }
-      res.send({ status: "success", message: "일반 결제 성공" });
 
-      // } else { // 결제 금액 불일치. 위/변조 된 결제
-      //   throw { status: "forgery", message: "위조된 결제시도" };
-      // }
-  } catch (e) {
-    res.status(400).send(e);
-  }
+var Bootpay = require('./server_nodejs-master/lib/bootpay.js');
+
+BootpayRest.setConfig(
+    '59a4d32b396fa607c2e75e00',
+    't3UENPWvsUort5WG0BFVk2+yBzmlt3UDvhDH2Uwp0oA='    
+);
+
+BootpayRest.getAccessToken().then(function (tokenData) {
+    if (tokenData.status === 200) {
+        BootpayRest.verify('1234')
+            .then(function (data) {
+                console.log(data);
+            });
+    } else {
+        console.log('error!')
+    }
 });
 
-app.post("/iamport-webhook", async (req, res) => {
-    try {
-        const { imp_uid, merchant_uid } = req.body; // req의 body에서 imp_uid, merchant_uid 추출
-        // 액세스 토큰(access token) 발급 받기
-        const getToken = await axios({
-          url: "https://api.iamport.kr/users/getToken",
-          method: "post", // POST method
-          headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-          data: {
-            imp_key: "imp_apikey", // REST API키
-            imp_secret: "ekKoeW8RyKuT0zgaZsUtXXTLQ4AhPFW3ZGseDA6bkA5lamv9OqDMnxyeB9wqOsuO9W3Mx9YSJ4dTqJ3f" // REST API Secret
-          }
-        });
-        const { access_token } = getToken.data.response; // 인증 토큰
-        
-        // imp_uid로 아임포트 서버에서 결제 정보 조회
-        const getPaymentData = await axios({
-          url: `https://api.iamport.kr/payments/${imp_uid}`, // imp_uid 전달
-          method: "get", // GET method
-          headers: { "Authorization": access_token } // 인증 토큰 Authorization header에 추가
-        });
-        const paymentData = getPaymentData.data.response; // 조회한 결제 정보
-        const order = await Orders.findById(paymentData.merchant_uid);
-        const amountToBePaid = order.amount; // 결제 되어야 하는 금액
-        
-        // 결제 검증하기
-        const { amount, status } = paymentData;
-        if (amount === amountToBePaid) { // 결제 금액 일치. 결제 된 금액 === 결제 되어야 하는 금액
-          await Orders.findByIdAndUpdate(merchant_uid, { $set: paymentData }); // DB에 결제 정보 저장
-          switch (status) {
-            case "ready": // 가상계좌 발급
-              // DB에 가상계좌 발급 정보 저장
-              const { vbank_num, vbank_date, vbank_name } = paymentData;
-              await Users.findByIdAndUpdate("/* 고객 id */", { $set: { vbank_num, vbank_date, vbank_name }});
-              // 가상계좌 발급 안내 문자메시지 발송
-              SMS.send({ text: `가상계좌 발급이 성공되었습니다. 계좌 정보 ${vbank_num} ${vbank_date} ${vbank_name}`});
-              res.send({ status: "vbankIssued", message: "가상계좌 발급 성공" });
-              break;
-            case "paid": // 결제 완료
-              res.send({ status: "success", message: "일반 결제 성공" });
-              break;
-          }
-        } else { // 결제 금액 불일치. 위/변조 된 결제
-          throw { status: "forgery", message: "위조된 결제시도" };
-        }
-    } catch (e) {
-      res.status(400).send(e);
-    }
-  });
-
-
+BootpayRest.getAccessToken().then(function (response) {
+	// Access Token을 발급 받았을 때
+	if (response.status === 200 && response.data.token !== undefined) {
+		BootpayRest.verify('[[ receipt_id ]]').then(function (_response) {
+			// 검증 결과를 제대로 가져왔을 때
+			if (_response.status === 200) {
+				// 원래 주문했던 금액이 일치하는가?
+				// 그리고 결제 상태가 완료 상태인가?
+				if (_response.data.price === price && _response.data.status === 1) {
+					// TODO: 이곳이 상품 지급 혹은 결제 완료 처리를 하는 로직으로 사용하면 됩니다.
+				}
+			}
+		});
+	}
+});
 
 app.listen(app.get('port'),()=>{
     console.log(app.get('port'),'번 포트에서 대기 중');
