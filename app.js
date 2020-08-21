@@ -28,6 +28,11 @@ BootpayRest.setConfig(
     '59a4d32b396fa607c2e75e00',
     't3UENPWvsUort5WG0BFVk2+yBzmlt3UDvhDH2Uwp0oA='    
 );
+BootpayRest.getAccessToken().then(function (response) {
+	if (response.status === 200) {
+		console.log(response.data.token);
+	}
+});
 
 BootpayRest.getAccessToken().then(function (tokenData) {
     if (tokenData.status === 200) {
