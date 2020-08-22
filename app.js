@@ -33,7 +33,7 @@ BootpayRest.getAccessToken().then(function (response) {
 		console.log(response.data.token);
 	}
 });
-
+app.post('/check',(req, res)=>{
 BootpayRest.getAccessToken().then(function (tokenData) {
     if (tokenData.status === 200) {
         BootpayRest.verify('1234')
@@ -44,6 +44,8 @@ BootpayRest.getAccessToken().then(function (tokenData) {
         console.log('error!')
     }
 });
+}
+)
 
 BootpayRest.getAccessToken().then(function (response) {
 	// Access Token을 발급 받았을 때
