@@ -46,22 +46,24 @@ BootpayRest.getAccessToken().then(function (tokenData) {
 });
 }
 )
+app.post('doubleCheck',(req, res)=>{
 
-BootpayRest.getAccessToken().then(function (response) {
-	// Access Token을 발급 받았을 때
-	if (response.status === 200 && response.data.token !== undefined) {
-		BootpayRest.verify('[[ receipt_id ]]').then(function (_response) {
-			// 검증 결과를 제대로 가져왔을 때
-			if (_response.status === 200) {
-				// 원래 주문했던 금액이 일치하는가?
-				// 그리고 결제 상태가 완료 상태인가?
-				if (_response.data.price === price && _response.data.status === 1) {
-					// TODO: 이곳이 상품 지급 혹은 결제 완료 처리를 하는 로직으로 사용하면 됩니다.
+	BootpayRest.getAccessToken().then(function (response) {
+		// Access Token을 발급 받았을 때
+		if (response.status === 200 && response.data.token !== undefined) {
+			BootpayRest.verify('[[ receipt_id ]]').then(function (_response) {
+				// 검증 결과를 제대로 가져왔을 때
+				if (_response.status === 200) {
+					// 원래 주문했던 금액이 일치하는가?
+					// 그리고 결제 상태가 완료 상태인가?
+					if (_response.data.price === price && _response.data.status === 1) {
+						// TODO: 이곳이 상품 지급 혹은 결제 완료 처리를 하는 로직으로 사용하면 됩니다.
+					}
 				}
-			}
-		});
-	}
-});
+			});
+		}
+	});
+})
 
 app.listen(app.get('port'),()=>{
     console.log(app.get('port'),'번 포트에서 대기 중');
