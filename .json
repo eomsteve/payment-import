@@ -1,0 +1,42 @@
+{
+    "status": 200,
+    "code": 0,
+    "message": "",
+    "data": {
+        "receipt_id": "5f43dfaa2225b4000750b932",
+        "order_id": "1598283690",
+        "name": "빅 타이트 셔츠 외 2개",
+        "price": 99000,
+        "tax_free": 0,
+        "remain_price": 99000,
+        "remain_tax_free": 0,
+        "cancelled_price": 0,
+        "cancelled_tax_free": 0,
+        "receipt_url": "https://app.bootpay.co.kr/bill/QnM2U2dNNnFsVGkvdFRjUWJNdEhEMS9WTTQwMmdoZ2VibTNmWDBJU21tYVV6%0AQT09LS1JM0I3ZVVpeldKZElRckZ3LS1PTXdYMC9iejRSWFNHMVk4NmRiVHJB%0APT0%3D%0A",
+        "unit": "krw",
+        "pg": "inicis",
+        "method": "card",
+        "pg_name": "이니시스",
+        "method_name": "ISP / 앱카드결제",
+        "payment_data": {
+            "card_name": "신한카드",
+            "card_quota": "11",
+            "receipt_id": "5f43dfaa2225b4000750b932",
+            "n": "빅 타이트 셔츠 외 2개",
+            "p": 99000,
+            "pg": "이니시스",
+            "pm": "ISP / 앱카드결제",
+            "pg_a": "inicis",
+            "pm_a": "card",
+            "o_id": "1598283690",
+            "p_at": "2020-08-25 00:42:30",
+            "s": 1,
+            "g": 2
+        },
+        "requested_at": "2020-08-25 00:41:31",
+        "purchased_at": "2020-08-25 00:42:30",
+        "status": 1,
+        "status_en": "complete",
+        "status_ko": "결제완료"
+    }
+}
